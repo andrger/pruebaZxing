@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector de Códigos de Barras y QR</title>
+    <script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+    <script>
+        window.addEventListener('load', () => {
+            const codeReader = new ZXing.BrowserMultiFormatReader();
+            console.log('ZXing code reader initialized');
+
+            codeReader.listVideoInputDevices()
+                .then((videoInputDevices) => {
+                    const selectedDeviceId = videoInputDevices[0].deviceId;
+                    console.log(`Selected device: ${selectedDeviceId}`);
+
+                    const videoElement = document.getElementById('video');
+                    videoElement.setAttribute('autoplay', 'true');
+
+                    codeReader.decodeFromVideoDevice(selectedDeviceId, videoElement, (result, err) => {
+                        if (result) {
+                            console.log(result);
+                            document.getElementById('result').textContent = result.text;
+                        }
+                        if (err && !(err instanceof ZXing.NotFoundException)) {
+                            console.error(err);
+                        }
+                    });
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        });
+    </script>
+</head>
+<body>
+    <h1>Lector de Códigos de Barras y QR</h1>
+    <p>Utiliza tu cámara para escanear códigos de barras y QR, incluyendo PDF417.</p>
+    
+    <video id="video" width="300" height="200" style="border: 1px solid gray"></video>
+
+    <div id="result" style="margin-top: 20px; font-size: 20px;"></div>
+</body>
+</html>
